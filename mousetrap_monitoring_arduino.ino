@@ -1,21 +1,22 @@
 struct TRAP
 {
     int pin;
+    String name;
     bool triggered;
 };
 
 struct TRAP trapPins[] = {
-    {5, false},
-    {4, false}
+    {5, "trap1", false},
+    {4, "trap2", false}
 };
 
 void handleTrigger(struct TRAP *trap) {
-    if (trap->triggered == false) Serial.println("Trap triggered on pin: "+String(trap->pin));
+    if (trap->triggered == false) Serial.println("Trap triggered: "+trap->name);
     trap->triggered = true;
 }
 
 void handleReset(struct TRAP *trap) {
-    if (trap->triggered == true) Serial.println("Trap reset on pin: "+String(trap->pin));
+    if (trap->triggered == true) Serial.println("Trap reset: "+trap->name);
     trap->triggered = false;
 }
 
