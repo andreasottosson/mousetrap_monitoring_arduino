@@ -1,7 +1,7 @@
-# TODO:
-# - Better logic in trapEventHandler
-# - Add WiFi
-# - Add MQTT support
+// TODO:
+// - Add WiFi
+// - Add IFTTT notifications
+// - (Add MQTT support)
 
 struct TRAP
 {
@@ -11,17 +11,16 @@ struct TRAP
 };
 
 struct TRAP trapPins[] = {
+    // false = 0, true = 1
     {5, "trap1", false},
     {4, "trap2", false}
 };
 
-void trapEventHandler(struct TRAP *trap, int trapValue) {
-    if (trapValue == 1 && trap->triggered == false) {
+void trapEventHandler(struct TRAP *trap) {
+    if (trap->triggered == true) {
         Serial.println("Trap triggered: "+trap->name);
-        trap->triggered = true;
-    } else if (trapValue == 0 && trap->triggered == true) {
+    } else if (trap->triggered == false) {
         Serial.println("Trap reset: "+trap->name);
-        trap->triggered = false;
     }
 }
 
@@ -33,10 +32,11 @@ void setup() {
 }
 
 void loop() {
-    int trapValue;
+    int trapCurrentValue;
     for (byte i = 0; i < (sizeof(trapPins) / sizeof(trapPins[0])); i++ ) {
-        trapValue = digitalRead(trapPins[i].pin);
-        trapEventHandler(&trapPins[i], trapValue);
+        trapCurrentValue = trapPins[i].triggered;
+        trapPins[i].triggered = digitalRead(trapPins[i].pin);
+        if (trapCurrentValue != trapPins[i].triggered) trapEventHandler(&trapPins[i]);
         delay(1000);
     }
 }
